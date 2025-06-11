@@ -1,39 +1,54 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>You Liked WHAT?</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>You Liked What?</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #f9dfe8, #fcd6f4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .connect-btn {
+      font-size: 1.5rem;
+      padding: 1rem 2rem;
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .connect-btn:hover {
+      transform: scale(1.05);
+    }
+    .room-code {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      background-color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+  </style>
 </head>
 <body>
-    <header>You Liked WHAT?</header>
-    <div id="username-display">Bienvenue, <span id="username">Invité</span>!</div>
-    <div class="container">
-        <h2>Créer une Room</h2>
-        <label for="rounds">Manches:</label>
-        <select id="rounds">
-            <option>5</option><option>10</option><option>15</option>
-            <option selected>20</option><option>30</option><option>50</option>
-        </select>
-        <label for="timer">Temps par vidéo:</label>
-        <select id="timer">
-            <option>10</option><option selected>20</option><option>30</option>
-        </select>
-        <button onclick="createRoom()">Créer</button>
-    </div>
-    <div class="container">
-        <h2>Rejoindre une Room</h2>
-        <input type="text" placeholder="Code de la room">
-        <button>Rejoindre</button>
-    </div>
-    <div class="leaderboard" id="leaderboard">
-        <h3>Classement</h3>
-        <p class="rank">🥇 Joueur1 - 120 pts</p>
-        <p class="rank">🥈 Joueur2 - 110 pts</p>
-        <p class="rank">🥉 Joueur3 - 100 pts</p>
-        <p class="rank">Ton rang : 6e (85 pts)</p>
-        <p class="rank">⏱️ Plus rapide : Joueur2 (1.2s)</p>
-        <p class="rank">🐢 Plus lent : Joueur5 (9.8s)</p>
-    </div>
+  <button class="connect-btn" onclick="alert('Connexion TikTok simulée')">Se connecter à TikTok</button>
+  <div class="room-code" id="roomCode">Code de la room : <span></span></div>
+
+  <script>
+    function generateRoomCode() {
+      const code = Math.floor(100000 + Math.random() * 900000);
+      document.querySelector("#roomCode span").textContent = code;
+    }
+    generateRoomCode();
+  </script>
 </body>
 </html>
