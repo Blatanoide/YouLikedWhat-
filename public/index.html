@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>You Liked WHAT?</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>You Liked WHAT?</header>
+    <div id="username-display">Bienvenue, <span id="username">Invité</span>!</div>
+    <div class="container">
+        <h2>Créer une Room</h2>
+        <label for="rounds">Manches:</label>
+        <select id="rounds">
+            <option>5</option><option>10</option><option>15</option>
+            <option selected>20</option><option>30</option><option>50</option>
+        </select>
+        <label for="timer">Temps par vidéo:</label>
+        <select id="timer">
+            <option>10</option><option selected>20</option><option>30</option>
+        </select>
+        <button onclick="createRoom()">Créer</button>
+    </div>
+    <div class="container">
+        <h2>Rejoindre une Room</h2>
+        <input type="text" placeholder="Code de la room">
+        <button>Rejoindre</button>
+    </div>
+    <div class="leaderboard" id="leaderboard">
+        <h3>Classement</h3>
+        <p class="rank">🥇 Joueur1 - 120 pts</p>
+        <p class="rank">🥈 Joueur2 - 110 pts</p>
+        <p class="rank">🥉 Joueur3 - 100 pts</p>
+        <p class="rank">Ton rang : 6e (85 pts)</p>
+        <p class="rank">⏱️ Plus rapide : Joueur2 (1.2s)</p>
+        <p class="rank">🐢 Plus lent : Joueur5 (9.8s)</p>
+    </div>
+</body>
+</html>
