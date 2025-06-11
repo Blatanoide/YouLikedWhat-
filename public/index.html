@@ -49,6 +49,18 @@
       document.querySelector("#roomCode span").textContent = code;
     }
     generateRoomCode();
+	<input id="username" placeholder="Ton pseudo" />
+<button id="connect-btn">Se connecter à TikTok</button><br><br>
+
+<button id="create-room-btn">Créer une Room</button>
+<input id="room-code" placeholder="Code Room" />
+<button id="join-room-btn">Rejoindre Room</button>
+
+<p id="status">Statut : Non connecté</p>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="script.js"></script>
+
   </script>
 </body>
 </html>
