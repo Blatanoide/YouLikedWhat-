@@ -36,7 +36,7 @@ app.get('/auth/tiktok', (req, res) => {
 
 app.get('/auth/tiktok/callback', async (req, res) => {
     const { code } = req.query;
-
+    console.log('✅ tokenResp.data:', tokenResp.data)
     if (!code) {
         return res.status(400).send("Code manquant dans la redirection TikTok.");
     }
@@ -49,7 +49,7 @@ app.get('/auth/tiktok/callback', async (req, res) => {
             grant_type: 'authorization_code',
             redirect_uri: CALLBACK_URL,
         });
-
+        console.log('✅ tokenResp.data:', tokenResp.data);
         const access_token = tokenResp.data.data.access_token;
 
         const userResp = await axios.get('https://open.tiktokapis.com/v2/user/info/', {
