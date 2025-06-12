@@ -1,66 +1,35 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>You Liked What?</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #f9dfe8, #fcd6f4);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .connect-btn {
-      font-size: 1.5rem;
-      padding: 1rem 2rem;
-      background-color: #ff69b4;
-      color: white;
-      border: none;
-      border-radius: 1rem;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .connect-btn:hover {
-      transform: scale(1.05);
-    }
-    .room-code {
-      margin-top: 2rem;
-      font-size: 1.2rem;
-      background-color: #fff;
-      padding: 0.5rem 1rem;
-      border-radius: 10px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.2);
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <button class="connect-btn" onclick="alert('Connexion TikTok simulée')">Se connecter à TikTok</button>
-  <div class="room-code" id="roomCode">Code de la room : <span></span></div>
+  <div id="auth-container">
+    <button id="login-button">Se connecter à TikTok</button>
+  </div>
 
-  <script>
-    function generateRoomCode() {
-      const code = Math.floor(100000 + Math.random() * 900000);
-      document.querySelector("#roomCode span").textContent = code;
-    }
-    generateRoomCode();
-	<input id="username" placeholder="Ton pseudo" />
-<button id="connect-btn">Se connecter à TikTok</button><br><br>
+  <div id="main-ui" style="display: none">
+    <div id="user-info">
+      <img id="user-avatar" src="" alt="Avatar">
+      <span id="user-name"></span>
+    </div>
 
-<button id="create-room-btn">Créer une Room</button>
-<input id="room-code" placeholder="Code Room" />
-<button id="join-room-btn">Rejoindre Room</button>
+    <div id="room-actions">
+      <h2>Rejoindre ou Créer une Room</h2>
+      <div>
+        <input id="room-code-input" placeholder="Code à 6 chiffres">
+        <button id="join-room">Rejoindre</button>
+      </div>
+      <div>
+        <button id="create-room">Créer une Room</button>
+        <p id="room-created-code" style="display: none"></p>
+      </div>
+    </div>
+  </div>
 
-<p id="status">Statut : Non connecté</p>
-
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="script.js"></script>
-
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>

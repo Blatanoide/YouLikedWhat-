@@ -4,6 +4,10 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { nanoid } = require('nanoid');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+
+app.use(cookieParser());
+
 
 const app = express();
 const server = http.createServer(app);

@@ -1,44 +1,38 @@
+document.addEventListener('DOMContentLoaded', () => {
+  const loginBtn = document.getElementById('login-button');
+  const authContainer = document.getElementById('auth-container');
+  const mainUI = document.getElementById('main-ui');
+  const userAvatar = document.getElementById('user-avatar');
+  const userName = document.getElementById('user-name');
 
-const socket = io('http://localhost:3001');
+  const user = JSON.parse(localStorage.getItem('tiktokUser'));
+  if (user) {
+    showMainUI(user);
+  }
 
-const connectBtn = document.getElementById('connect-btn');
-const createRoomBtn = document.getElementById('create-room-btn');
-const joinRoomBtn = document.getElementById('join-room-btn');
-const roomCodeInput = document.getElementById('room-code');
-const usernameInput = document.getElementById('username');
-const statusText = document.getElementById('status');
-
-let currentRoom = null;
-
-connectBtn.addEventListener('click', () => {
-  statusText.innerText = 'Connecté (faux login TikTok)';
-});
-
-createRoomBtn.addEventListener('click', () => {
-  const username = usernameInput.value.trim();
-  if (!username) return alert('Entre un pseudo');
-  socket.emit('createRoom', { username }, (res) => {
-    if (res.success) {
-      currentRoom = res.roomCode;
-      statusText.innerText = `Room créée : ${res.roomCode}`;
-    }
+  loginBtn.addEventListener('click', () => {
+    window.location.href = '/auth/tiktok';
   });
-});
 
-joinRoomBtn.addEventListener('click', () => {
-  const username = usernameInput.value.trim();
-  const roomCode = roomCodeInput.value.trim();
-  if (!username || !roomCode) return alert('Remplis tous les champs');
-  socket.emit('joinRoom', { username, roomCode }, (res) => {
-    if (res.success) {
-      currentRoom = roomCode;
-      statusText.innerText = `Rejoint la room : ${roomCode}`;
+  function showMainUI(user) {
+    authContainer.style.display = 'none';
+    mainUI.style.display = 'block';
+    userAvatar.src = user.avatar;
+    userName.textContent = user.display_name;
+  }
+
+  document.getElementById('join-room').addEventListener('click', () => {
+    const code = document.getElementById('room-code-input').value;
+    if (/^\d{6}$/.test(code)) {
+      alert('Tentative de rejoindre la room ' + code);
     } else {
-      alert(res.message);
+      alert('Code invalide (6 chiffres)');
     }
   });
-});
 
-socket.on('userListUpdate', (users) => {
-  console.log('Membres:', users.map(u => u.username).join(', '));
+  document.getElementById('create-room').addEventListener('click', () => {
+    const code = Math.floor(100000 + Math.random() * 900000);
+    document.getElementById('room-created-code').style.display = 'block';
+    document.getElementById('room-created-code').textContent = `Room créée ! Code : ${code}`;
+  });
 });

@@ -1,0 +1,29 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: linear-gradient(to right, #f8d7e5, #fbeff5);
+  margin: 0;
+  padding: 0;
+}
+#auth-container {
+  margin-top: 20vh;
+}
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 10px;
+  border: none;
+  background: #ff70a6;
+  color: white;
+  cursor: pointer;
+}
+button:hover {
+  background: #ff5196;
+}
+#main-ui {
+  margin-top: 50px;
+}
+#user-info img {
+  width: 60px;
+  border-radius: 50%;
+}
