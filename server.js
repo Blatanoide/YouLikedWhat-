@@ -22,6 +22,8 @@ const CALLBACK_URL = process.env.TIKTOK_REDIRECT_URI;
 app.use(cors());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+console.log("CLIENT_KEY =", process.env.TIKTOK_CLIENT_KEY);
+
 
 app.get('/auth/tiktok', (req, res) => {
     const state = Math.random().toString(36).substring(2, 15);
