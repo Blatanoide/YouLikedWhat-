@@ -23,7 +23,7 @@ app.use(cors());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 console.log("CLIENT_KEY =", process.env.TIKTOK_CLIENT_KEY);
-
+console.log("User info:", user);
 
 app.get('/auth/tiktok', (req, res) => {
     const state = Math.random().toString(36).substring(2, 15);
@@ -46,7 +46,7 @@ app.get('/auth/tiktok/callback', async (req, res) => {
             redirect_uri: CALLBACK_URL,
         });
 
-        const access_token = tokenResp.data.access_token;
+        const access_token = tokenResp.data.data.access_token;
 
         const userResp = await axios.get('https://open.tiktokapis.com/v2/user/info/', {
             headers: {
@@ -117,3 +117,6 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`✅ Server running on http://localhost:${PORT}`);
 });
+if (!code) {
+    return res.status(400).send("Code manquant dans la redirection TikTok.");
+}
