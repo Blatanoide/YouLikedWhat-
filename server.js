@@ -5,6 +5,7 @@ const { Server } = require('socket.io');
 const { nanoid } = require('nanoid');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
 
 const app = express();
