@@ -37,6 +37,10 @@ app.get('/auth/tiktok', (req, res) => {
 app.get('/auth/tiktok/callback', async (req, res) => {
     const { code } = req.query;
 
+    if (!code) {
+        return res.status(400).send("Code manquant dans la redirection TikTok.");
+    }
+
     try {
         const tokenResp = await axios.post('https://open.tiktokapis.com/v2/oauth/token/', {
             client_key: CLIENT_KEY,
@@ -118,6 +122,4 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`✅ Server running on http://localhost:${PORT}`);
 });
-if (!code) {
-    return res.status(400).send("Code manquant dans la redirection TikTok.");
 }
