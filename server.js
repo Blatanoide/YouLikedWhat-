@@ -14,7 +14,7 @@ const io = new Server(server, {
 });
 
 app.use(cors());
-
+app.use(express.static('public'));
 const rooms = {}; // { roomCode: { users: [], maxPlayers: 15 } }
 
 io.on('connection', (socket) => {
