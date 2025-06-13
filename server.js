@@ -2,19 +2,21 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const { nanoid } = require('nanoid');
+const path = require('path');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const path = require('path');
 const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: { origin: '*' }
+    cors: {
+        origin: '*',
+    },
 });
 
+// ENV VARIABLES
 const CLIENT_KEY = process.env.TIKTOK_CLIENT_KEY;
 const CLIENT_SECRET = process.env.TIKTOK_CLIENT_SECRET;
 const CALLBACK_URL = process.env.TIKTOK_REDIRECT_URI;
@@ -22,23 +24,28 @@ const CALLBACK_URL = process.env.TIKTOK_REDIRECT_URI;
 app.use(cors());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-console.log("CLIENT_KEY =", process.env.TIKTOK_CLIENT_KEY);
 
+console.log("✅ CLIENT_KEY =", CLIENT_KEY);
+console.log("✅ CALLBACK_URL =", CALLBACK_URL);
 
+// Auth route
 app.get('/auth/tiktok', (req, res) => {
     const state = Math.random().toString(36).substring(2, 15);
     const scope = 'user.info.basic';
     const redirectUri = encodeURIComponent(CALLBACK_URL);
 
     const oauthUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${CLIENT_KEY}&scope=${scope}&response_type=code&redirect_uri=${redirectUri}&state=${state}`;
+
+    console.log("🔗 Redirecting to TikTok:", oauthUrl);
     res.redirect(oauthUrl);
 });
 
+// Callback route
 app.get('/auth/tiktok/callback', async (req, res) => {
     const { code } = req.query;
-    console.log('✅ tokenResp.data:', tokenResp.data)
+
     if (!code) {
-        return res.status(400).send("Code manquant dans la redirection TikTok.");
+        return res.status(400).send("❌ Code manquant dans la redirection TikTok.");
     }
 
     try {
@@ -49,6 +56,7 @@ app.get('/auth/tiktok/callback', async (req, res) => {
             grant_type: 'authorization_code',
             redirect_uri: CALLBACK_URL,
         });
+
         console.log('✅ tokenResp.data:', tokenResp.data);
         const access_token = tokenResp.data.data.access_token;
 
@@ -59,7 +67,7 @@ app.get('/auth/tiktok/callback', async (req, res) => {
         });
 
         const user = userResp.data.data.user;
-        console.log("User info:", user);
+        console.log("✅ User info:", user);
 
         res.cookie('tiktokUser', JSON.stringify({
             display_name: user.display_name,
@@ -68,23 +76,25 @@ app.get('/auth/tiktok/callback', async (req, res) => {
 
         res.redirect('/');
     } catch (err) {
-        console.error('OAuth Error:', err.response?.data || err.message);
+        console.error('❌ OAuth Error:', err.response?.data || err.message);
         res.status(500).send("Erreur lors de l'authentification.");
     }
 });
 
+// Auth check route
 app.get('/auth/me', (req, res) => {
     if (req.cookies.tiktokUser) {
         res.json(JSON.parse(req.cookies.tiktokUser));
     } else {
-        res.status(401).json({ error: 'Non authentifié' });
+        res.status(401).json({ error: "Non authentifié" });
     }
 });
 
+// Room logic (pas modifié ici)
 const rooms = {};
 
 io.on('connection', (socket) => {
-    console.log('New user connected:', socket.id);
+    console.log('🔌 New user connected:', socket.id);
 
     socket.on('createRoom', ({ username }, callback) => {
         let roomCode;
@@ -92,15 +102,20 @@ io.on('connection', (socket) => {
             roomCode = Math.floor(100000 + Math.random() * 900000).toString();
         } while (rooms[roomCode]);
 
-        rooms[roomCode] = { users: [{ id: socket.id, username }], maxPlayers: 15 };
+        rooms[roomCode] = {
+            users: [{ id: socket.id, username }],
+            maxPlayers: 15,
+        };
+
         socket.join(roomCode);
         callback({ success: true, roomCode });
     });
 
     socket.on('joinRoom', ({ roomCode, username }, callback) => {
         const room = rooms[roomCode];
-        if (!room) return callback({ success: false, message: 'Room not found' });
-        if (room.users.length >= room.maxPlayers) return callback({ success: false, message: 'Room is full' });
+        if (!room) return callback({ success: false, message: "Room not found" });
+        if (room.users.length >= room.maxPlayers)
+            return callback({ success: false, message: "Room is full" });
 
         room.users.push({ id: socket.id, username });
         socket.join(roomCode);
@@ -120,5 +135,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
-    console.log(`✅ Server running on http://localhost:${PORT}`);
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
