@@ -57,6 +57,9 @@ app.get('/auth/tiktok/callback', async (req, res) => {
             redirect_uri: CALLBACK_URL,
         });
 
+        // 🔍 Affiche les headers pour récupérer le log ID TikTok
+        console.log("📄 TikTok Response Headers:", tokenResp.headers);
+        console.log("🪵 x-tt-logid:", tokenResp.headers['x-tt-logid']);
         console.log('✅ tokenResp.data:', tokenResp.data);
         const access_token = tokenResp.data.data.access_token;
 
