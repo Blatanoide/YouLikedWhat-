@@ -3,9 +3,10 @@ const puppeteer = require('puppeteer');
 
 async function scrapeLikesWithCredentials({ username, password, headless = true, timeout = 60000 }) {
     const browser = await puppeteer.launch({
-        headless,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
+
 
     const page = await browser.newPage();
     try {
