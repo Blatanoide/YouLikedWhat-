@@ -85,8 +85,6 @@ app.get('/auth/me', (req, res) => {
 });
 
 // server.js (ajoute au début)
-const { scrapeLikesWithCredentials } = require('./scraper');
-
 // Endpoint POST /scrape-likes
 // Body attendu: { username: 'insta_user', password: 'pass123' }
 app.use(express.json({ limit: '1mb' }));
