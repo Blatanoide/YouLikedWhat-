@@ -1,8 +1,9 @@
 // scraper.js
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 
 async function scrapeLikesWithCredentials({ username, password, headless = true, timeout = 60000 }) {
     const browser = await puppeteer.launch({
+        executablePath: '/usr/bin/chromium-browser', // chemin Chromium sur Render
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
