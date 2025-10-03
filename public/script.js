@@ -45,6 +45,28 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ username, password })
         });
 
+        const importBtn = document.getElementById('import-likes');
+        if (importBtn) {
+            importBtn.addEventListener('click', async () => {
+                const username = document.getElementById('insta-user').value;
+                const password = document.getElementById('insta-pass').value;
+
+                const resp = await fetch('/scrape-likes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await resp.json();
+                if (data.success) {
+                    console.log("Likes récupérés :", data.posts);
+                    alert("Tu as importé " + data.posts.length + " likes !");
+                } else {
+                    alert("Erreur : " + (data.error || data.message));
+                }
+            });
+        }
+
         const data = await resp.json();
         if (data.success) {
             console.log("Likes récupérés :", data.posts);
