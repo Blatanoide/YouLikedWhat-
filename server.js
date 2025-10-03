@@ -6,6 +6,7 @@ const path = require('path');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const axios = require('axios');
+const { scrapeLikesWithCredentials } = require('./scraper');
 require('dotenv').config();
 
 const app = express();
@@ -29,58 +30,48 @@ console.log("✅ CLIENT_KEY =", CLIENT_KEY);
 console.log("✅ CALLBACK_URL =", CALLBACK_URL);
 
 // Auth route
-app.get('/auth/tiktok', (req, res) => {
+app.get('/auth/instagram', (req, res) => {
     const state = Math.random().toString(36).substring(2, 15);
-    const scope = 'user.info.basic';
-    const redirectUri = encodeURIComponent(CALLBACK_URL);
+    const redirectUri = encodeURIComponent(process.env.INSTAGRAM_REDIRECT_URI);
+    const scope = 'user_profile,user_media';
 
-    const oauthUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${CLIENT_KEY}&scope=${scope}&response_type=code&redirect_uri=${redirectUri}&state=${state}`;
+    const oauthUrl = `https://api.instagram.com/oauth/authorize?client_id=${process.env.INSTAGRAM_CLIENT_ID}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code&state=${state}`;
 
-    console.log("🔗 Redirecting to TikTok:", oauthUrl);
     res.redirect(oauthUrl);
 });
 
 // Callback route
-app.get('/auth/tiktok/callback', async (req, res) => {
+app.get('/auth/instagram/callback', async (req, res) => {
     const { code } = req.query;
-
-    if (!code) {
-        return res.status(400).send("❌ Code manquant dans la redirection TikTok.");
-    }
+    if (!code) return res.status(400).send("❌ Code manquant dans la redirection Instagram.");
 
     try {
-        const tokenResp = await axios.post('https://open.tiktokapis.com/v2/oauth/token/', {
-            client_key: CLIENT_KEY,
-            client_secret: CLIENT_SECRET,
+        // Échange code -> access_token
+        const tokenResp = await axios.post("https://api.instagram.com/oauth/access_token", {
+            client_id: process.env.INSTAGRAM_CLIENT_ID,
+            client_secret: process.env.INSTAGRAM_CLIENT_SECRET,
+            grant_type: "authorization_code",
+            redirect_uri: process.env.INSTAGRAM_REDIRECT_URI,
             code,
-            grant_type: 'authorization_code',
-            redirect_uri: CALLBACK_URL,
         });
 
-        // 🔍 Affiche les headers pour récupérer le log ID TikTok
-        console.log("📄 TikTok Response Headers:", tokenResp.headers);
-        console.log("🪵 x-tt-logid:", tokenResp.headers['x-tt-logid']);
-        console.log('✅ tokenResp.data:', tokenResp.data);
-        const access_token = tokenResp.data.data.access_token;
+        const access_token = tokenResp.data.access_token;
+        const user_id = tokenResp.data.user_id;
 
-        const userResp = await axios.get('https://open.tiktokapis.com/v2/user/info/', {
-            headers: {
-                Authorization: `Bearer ${access_token}`,
-            },
-        });
+        // Récup info utilisateur
+        const userResp = await axios.get(`https://graph.instagram.com/${user_id}?fields=id,username,account_type&access_token=${access_token}`);
+        const profilePic = `https://graph.instagram.com/${user_id}/picture?access_token=${access_token}`; // pas officiel, à bricoler
 
-        const user = userResp.data.data.user;
-        console.log("✅ User info:", user);
+        const user = {
+            display_name: userResp.data.username,
+            avatar: profilePic,
+        };
 
-        res.cookie('tiktokUser', JSON.stringify({
-            display_name: user.display_name,
-            avatar: user.avatar_url,
-        }), { maxAge: 86400000 });
-
+        res.cookie('instagramUser', JSON.stringify(user), { maxAge: 86400000 });
         res.redirect('/');
     } catch (err) {
         console.error('❌ OAuth Error:', err.response?.data || err.message);
-        res.status(500).send("Erreur lors de l'authentification.");
+        res.status(500).send("Erreur lors de l'authentification Instagram.");
     }
 });
 
@@ -92,6 +83,28 @@ app.get('/auth/me', (req, res) => {
         res.status(401).json({ error: "Non authentifié" });
     }
 });
+
+// server.js (ajoute au début)
+const { scrapeLikesWithCredentials } = require('./scraper');
+
+// Endpoint POST /scrape-likes
+// Body attendu: { username: 'insta_user', password: 'pass123' }
+app.use(express.json({ limit: '1mb' }));
+
+app.post('/scrape-likes', async (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) return res.status(400).json({ success: false, message: 'username & password required' });
+
+    // WARNING: security risk - do not store these creds
+    try {
+        const result = await scrapeLikesWithCredentials({ username, password, headless: true });
+        if (!result.success) return res.status(500).json(result);
+        return res.json({ success: true, posts: result.posts });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message || String(err) });
+    }
+});
+
 
 // Room logic (pas modifié ici)
 const rooms = {};
