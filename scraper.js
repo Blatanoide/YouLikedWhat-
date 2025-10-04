@@ -1,5 +1,5 @@
 // scraper.js
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 
 async function scrapeLikesWithCredentials({ username, password, headless = true }) {
     const browser = await puppeteer.launch({
