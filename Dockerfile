@@ -1,7 +1,7 @@
 # Dockerfile
 FROM node:20-slim
 
-# Installer chromium + dépendances nécessaires pour Puppeteer
+# Installer chromium et ses dépendances
 RUN apt-get update && apt-get install -y \
     chromium \
     fonts-liberation \
@@ -23,23 +23,13 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
   && rm -rf /var/lib/apt/lists/*
 
-# Dire à Puppeteer de NE PAS retélécharger Chromium (on utilisera l'exécutable système)
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 ENV CHROMIUM_PATH=/usr/bin/chromium
 
 WORKDIR /app
-
-# Copier les fichiers package pour installer les dépendances en couche
 COPY package*.json ./
-
-# Installer deps (utilise package-lock pour reproductibilité)
 RUN npm ci --only=production
-
-# Copier le reste du code
 COPY . .
 
-# Exposer le port (ton server.js écoute process.env.PORT || 10000)
 EXPOSE 10000
-
-# Commande de démarrage
 CMD ["npm", "start"]

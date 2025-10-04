@@ -3,9 +3,9 @@ const puppeteer = require('puppeteer');
 
 async function scrapeLikesWithCredentials({ username, password, headless = true }) {
     const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        executablePath: puppeteer.executablePath(), // toujours fourni par puppeteer
+        headless,
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+        executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
     });
 
 
