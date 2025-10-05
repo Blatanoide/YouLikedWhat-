@@ -39,7 +39,11 @@ app.get('/auth/instagram', (req, res) => {
 
     res.redirect(oauthUrl);
 });
-
+app.use(cors({
+    origin: ['https://youlikedwhat.onrender.com'], // ton site Render
+    methods: ['GET', 'POST'],
+    credentials: true
+}));
 // Callback route
 app.get('/auth/instagram/callback', async (req, res) => {
     const { code } = req.query;
